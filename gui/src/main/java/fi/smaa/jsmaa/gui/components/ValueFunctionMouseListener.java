@@ -67,7 +67,7 @@ public class ValueFunctionMouseListener implements ChartMouseListener {
 	@Override
 	public void chartMouseClicked(ChartMouseEvent ev) {
 		ChartEntity ent = ev.getEntity();
-		
+
 		if (ent instanceof XYItemEntity) {
 			XYItemEntity xyItemEntity = (XYItemEntity) ent;
 			int idx = xyItemEntity.getItem();
@@ -81,7 +81,7 @@ public class ValueFunctionMouseListener implements ChartMouseListener {
 				crit.addValuePoint(new Point2D(realX, realY));
 			} catch (InvalidValuePointException e) {
 				JOptionPane.showMessageDialog(parent,
-						"Cannot add partial value function segments: "+ e.getMessage(), 
+						"Cannot add partial value function segments: "+ e.getMessage(),
 						"Unable to add point to the partial value function", JOptionPane.ERROR_MESSAGE);
 			}
 		}
@@ -96,7 +96,7 @@ public class ValueFunctionMouseListener implements ChartMouseListener {
 
 	private double getRealX(ChartMouseEvent ev) {
 		int relativeX = ev.getTrigger().getX();
-		Rectangle2D dataArea = chartPanel.getScreenDataArea();		
+		Rectangle2D dataArea = chartPanel.getScreenDataArea();
 		RectangleEdge dedge = plot.getDomainAxisEdge();
 		return plot.getDomainAxis().java2DToValue(relativeX, dataArea, dedge);
 	}

@@ -73,7 +73,7 @@ public class CriterionView implements ViewBuilder {
 	protected Criterion criterion;
 	protected SMAAModel model;
 	private Component parent;
-	
+
 	public CriterionView(Criterion crit, SMAAModel model, Component parent) {
 		this.criterion = crit;
 		this.model = model;
@@ -88,9 +88,9 @@ public class CriterionView implements ViewBuilder {
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(BorderFactory.createEmptyBorder());
 		CellConstraints cc = new CellConstraints();
-		
+
 		builder.add(buildOverviewPart(), cc.xy(1, 1));
-		
+
 		int row = 3;
 		if (criterion instanceof OutrankingCriterion) {
 			LayoutUtil.addRow(layout);
@@ -100,84 +100,83 @@ public class CriterionView implements ViewBuilder {
 			row = 7;
 		}
 		builder.addSeparator("Measurements", cc.xy(1, row));
-		
+
 		JComponent measPanel = null;
 		if (criterion instanceof CardinalCriterion && model.getMeasurements() instanceof IndependentMeasurements) {
 			ImpactMatrixPresentationModel iModel = new ImpactMatrixPresentationModel((IndependentMeasurements) model.getMeasurements());
-			measPanel = new CardinalCriterionMeasurementsView((CardinalCriterion) criterion, iModel).buildPanel();			
+			measPanel = new CardinalCriterionMeasurementsView((CardinalCriterion) criterion, iModel).buildPanel();
 		} else if (criterion instanceof OrdinalCriterion && model.getMeasurements() instanceof IndependentMeasurements) {
 			OrdinalCriterionMeasurementsPM pm = new OrdinalCriterionMeasurementsPM((OrdinalCriterion) criterion, (IndependentMeasurements) model.getMeasurements());
 			measPanel = new OrdinalCriterionMeasurementsView(pm).buildPanel();
 		}
 		builder.add(measPanel, cc.xy(1, row+2));
-		
+
 		row += 4;
 		if (criterion instanceof ScaleCriterion) {
 			LayoutUtil.addRow(layout);
 			builder.addSeparator("Value function", cc.xy(1, row));
 			LayoutUtil.addRow(layout);
-			
+
 			final JPanel chartPanel = buildValueFunctionChartPanel((ScaleCriterion) criterion);
-			
+
 			builder.add(chartPanel, cc.xy(1, row+2));
 			row += 4;
 		}
-		
+
 		if (model instanceof SMAATRIModel) {
 			LayoutUtil.addRow(layout);
 			builder.addSeparator("Profiles (category boundaries)", cc.xy(1, row));
 			LayoutUtil.addRow(layout);
 			builder.add(new ProfilesView((OutrankingCriterion)criterion, (SMAATRIModel)model).buildPanel(), cc.xy(1, row+2));
 		}
-			
+
 		return builder.getPanel();
 	}
 
 	private JPanel buildValueFunctionChartPanel(ScaleCriterion criterion) {
 		UtilityFunctionDataset dataset = new UtilityFunctionDataset(criterion);
-		
+
 		JFreeChart chart = ChartFactory.createXYLineChart("", "x", "v(x)",
 				dataset, PlotOrientation.VERTICAL,
 				false, true, true);
-		
+
 		final XYPlot plot = chart.getXYPlot();
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 		plot.setRenderer(0, renderer);
 		renderer.setSeriesPaint(0, Color.black);
 		renderer.setSeriesShape(0, ShapeUtilities.createDiamond(3.0f));
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
-		
+
 		ValueAxis rAxis = plot.getRangeAxis();
 		rAxis.setAutoRange(false);
 		rAxis.setRange(new Range(-0.03, 1.03));
 		ValueAxis dAxis = plot.getDomainAxis();
 		dAxis.setLowerMargin(0.03);
 		dAxis.setUpperMargin(0.03);
-			        
+
 		ChartPanel chartPanel = new ChartPanel(chart, false, true, true, false, true);
 		chartPanel.addChartMouseListener(new ValueFunctionMouseListener(chartPanel, criterion, parent));
-		
+
 		chartPanel.setDomainZoomable(false);
 		chartPanel.setRangeZoomable(false);
 		chartPanel.setDisplayToolTips(true);
 		chartPanel.setToolTipText("Click to add/remove partial value function points");
-		chartPanel.setMouseWheelEnabled(false);
 		chartPanel.setMouseZoomable(false);
-		
+
 		plot.setDomainCrosshairLockedOnData(false);
 		plot.setRangeCrosshairLockedOnData(false);
 		plot.setDomainCrosshairVisible(true);
 		plot.setRangeCrosshairVisible(true);
-		
+
 		FormLayout layout = new FormLayout(
 				"left:pref",
 				"p, 3dlu, p" );
-		
+
 		PanelBuilder builder = new PanelBuilder(layout);
 		CellConstraints cc = new CellConstraints();
 		builder.add(chartPanel, cc.xy(1, 1));
 		builder.add(new ValueFunctionPointsPanel(criterion), cc.xy(1, 3));
-				
+
 		return builder.getPanel();
 	}
 
@@ -185,12 +184,12 @@ public class CriterionView implements ViewBuilder {
 		FormLayout layout = new FormLayout(
 				"right:pref, 3dlu, left:pref",
 				"p, 3dlu, p" );
-		
+
 		PanelBuilder builder = new PanelBuilder(layout);
 		CellConstraints cc = new CellConstraints();
-				
+
 		PresentationModel<Criterion> pm = new PresentationModel<Criterion>(criterion);
-		
+
 		builder.addLabel("Name:", cc.xy(1, 1));
 		builder.add(BasicComponentFactory.createLabel(pm.getModel(Criterion.PROPERTY_NAME)),
 				cc.xy(3, 1)
@@ -209,8 +208,8 @@ public class CriterionView implements ViewBuilder {
 			builder.add(BasicComponentFactory.createLabel(pmc.getModel(ScaleCriterion.PROPERTY_SCALE),
 					new IntervalFormat()), cc.xy(3, row));
 			row += 2;
-		}	
-		
+		}
+
 		if (criterion instanceof CardinalCriterion) {
 			CardinalCriterion cardCrit = (CardinalCriterion) criterion;
 			PresentationModel<CardinalCriterion> pmc = new PresentationModel<CardinalCriterion>(cardCrit);
@@ -221,7 +220,7 @@ public class CriterionView implements ViewBuilder {
 					cc.xy(3, row)
 			);
 		}
-		
+
 		return builder.getPanel();
 	}
 
@@ -229,37 +228,37 @@ public class CriterionView implements ViewBuilder {
 		FormLayout layout = new FormLayout(
 				"right:pref, 3dlu, left:pref",
 				"p, 3dlu, p" );
-		
+
 		PanelBuilder builder = new PanelBuilder(layout);
 		CellConstraints cc = new CellConstraints();
-		
+
 		final OutrankingCriterion outrCrit = (OutrankingCriterion) criterion;
-		
+
 		ValueHolder indifHolder = new ValueHolder(outrCrit.getIndifMeasurement());
 		indifHolder.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
 				outrCrit.setIndifMeasurement((CardinalMeasurement) evt.getNewValue());
-			}			
+			}
 		});
 		ValueHolder prefHolder = new ValueHolder(outrCrit.getPrefMeasurement());
 		prefHolder.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
 				outrCrit.setPrefMeasurement((CardinalMeasurement) evt.getNewValue());
-			}	
+			}
 		});
 
 		MeasurementPanel.MeasurementType[] measVals = new MeasurementPanel.MeasurementType[] {
 				MeasurementType.EXACT, MeasurementType.INTERVAL, MeasurementType.GAUSSIAN
 		};
-		JPanel indifPanel = new MeasurementPanel(indifHolder, measVals);		
+		JPanel indifPanel = new MeasurementPanel(indifHolder, measVals);
 		JPanel prefPanel = new MeasurementPanel(prefHolder, measVals);
-		
+
 		builder.addLabel("Indifference:", cc.xy(1, 1));
-		builder.add(indifPanel, cc.xy(3, 1));				
-				
-		builder.addLabel("Preference:", cc.xy(1, 3));		
-		builder.add(prefPanel, cc.xy(3, 3));				
-		
+		builder.add(indifPanel, cc.xy(3, 1));
+
+		builder.addLabel("Preference:", cc.xy(1, 3));
+		builder.add(prefPanel, cc.xy(3, 3));
+
 		return builder.getPanel();
 	}
 }
